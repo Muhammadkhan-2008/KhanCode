@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="aeroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F2027"/>
+      <stop offset="50%" stop-color="#203A43"/>
+      <stop offset="100%" stop-color="#2C5364"/>
+    </linearGradient>
+    <linearGradient id="wingGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00C9FF"/>
+      <stop offset="100%" stop-color="#92FE9D"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="512" height="512" rx="110" fill="url(#aeroGrad)"/>
+  
+  <!-- Aero A / Rocket Shape -->
+  <path d="M256 80 L380 400 L256 340 L132 400 Z" fill="url(#wingGrad)" />
+  
+  <!-- Inner Cutout / Code Brackets shape -->
+  <path d="M256 160 L310 320 L256 290 L202 320 Z" fill="#0F2027" />
+  <path d="M180 260 L140 300 L180 340" fill="none" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M332 260 L372 300 L332 340" fill="none" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
