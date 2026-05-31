@@ -1,3 +1,4 @@
+import { AICopilot } from "./ai-copilot.js";
 
 import * as monaco from 'monaco-editor';
 
@@ -36,7 +37,8 @@ function initEditor() {
 }
 
 function setupEventListeners() {
-    document.getElementById('run-btn').addEventListener('click', runCode);
+    document.getElementById("run-btn").addEventListener("click", runCode);
+    document.getElementById("ai-btn").addEventListener("click", askAI);
 }
 
 function runCode() {
@@ -73,5 +75,29 @@ function runCode() {
         // Here we'll implement Alpine/PRoot execution later
         terminal.innerHTML += `<div>> Running ${language} via PRoot (Not yet implemented)</div>`;
         terminal.scrollTop = terminal.scrollHeight;
+    }
+}
+
+async function askAI() {
+    if (!window.aiCopilot) {
+        window.aiCopilot = new AICopilot();
+    }
+    const prompt = window.prompt("Ask AI Copilot to write code:");
+    if (!prompt) return;
+
+    const currentCode = editor.getValue();
+    const generatedCode = await window.aiCopilot.generateCode(prompt, currentCode);
+    
+    if (generatedCode) {
+        // Insert generated code at current cursor position
+        const position = editor.getPosition();
+        editor.executeEdits("ai-copilot", [
+            {
+                range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
+                text: generatedCode,
+                forceMoveMarkers: true
+            }
+        ]);
+        window.aiCopilot.log("Code generated and inserted successfully.");
     }
 }
