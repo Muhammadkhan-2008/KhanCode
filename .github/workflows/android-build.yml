@@ -41,6 +41,8 @@ jobs:
       run: cordova platform add android@13.0.0
 
     - name: Build Android APK
+      env:
+        JAVA_HOME: ${{ env.JAVA_HOME }}
       run: npm run build && cordova build android --release
 
     - name: Upload APK Artifact
