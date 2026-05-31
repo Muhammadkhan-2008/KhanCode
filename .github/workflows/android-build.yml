@@ -34,14 +34,14 @@ jobs:
 
     - name: Install Cordova and dependencies
       run: |
-        npm install -g cordova@11 parcel
+        npm install -g cordova parcel
         npm install
 
     - name: Add Android Platform
       run: cordova platform add android@11.0.0
 
     - name: Build Android APK
-      run: npm run build && cordova build android --release
+      run: npm run build && cordova build android --release -- --jvmargs="-Xmx2048m"
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
