@@ -1,29 +1,76 @@
-/**
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
+import * as monaco from 'monaco-editor';
 
-        http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
-*/
-
-// Wait for the deviceready event before using any of Cordova's device APIs.
-// See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
 document.addEventListener('deviceready', onDeviceReady, false);
 
-function onDeviceReady() {
-    // Cordova is now initialized. Have fun!
+let editor;
 
+function onDeviceReady() {
     console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
-    document.getElementById('deviceready').classList.add('ready');
+    initEditor();
+    setupEventListeners();
+}
+
+function initEditor() {
+    const defaultCode = `<!DOCTYPE html>
+<html>
+<head>
+    <title>AeroCode Test</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+        h1 { color: #007acc; }
+    </style>
+</head>
+<body>
+    <h1>Hello from AeroCode!</h1>
+    <p>HTML/CSS/JS execution engine.</p>
+</body>
+</html>`;
+
+    editor = monaco.editor.create(document.getElementById('editor-container'), {
+        value: defaultCode,
+        language: 'html',
+        theme: 'vs-dark',
+        automaticLayout: true
+    });
+}
+
+function setupEventListeners() {
+    document.getElementById('run-btn').addEventListener('click', runCode);
+}
+
+function runCode() {
+    const code = editor.getValue();
+    const language = editor.getModel().getLanguageId();
+    
+    const terminal = document.getElementById('terminal-container');
+    const browser = document.getElementById('browser-preview');
+    const iframe = document.getElementById('preview-frame');
+    const editorContainer = document.getElementById('editor-container');
+    
+    if (language === 'html') {
+        terminal.style.display = 'none';
+        editorContainer.style.display = 'none';
+        browser.style.display = 'block';
+        
+        iframe.srcdoc = code;
+        
+        // Add a back button if it doesn't exist
+        if (!document.getElementById('back-btn')) {
+            const backBtn = document.createElement('button');
+            backBtn.id = 'back-btn';
+            backBtn.className = 'btn';
+            backBtn.textContent = 'Back to Editor';
+            backBtn.onclick = () => {
+                browser.style.display = 'none';
+                editorContainer.style.display = 'block';
+                terminal.style.display = 'block';
+                backBtn.remove();
+            };
+            document.querySelector('.controls').prepend(backBtn);
+        }
+    } else {
+        // Here we'll implement Alpine/PRoot execution later
+        terminal.innerHTML += `<div>> Running ${language} via PRoot (Not yet implemented)</div>`;
+        terminal.scrollTop = terminal.scrollHeight;
+    }
 }
