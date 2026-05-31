@@ -20,11 +20,11 @@ jobs:
       with:
         node-version: '18'
 
-    - name: Set up Java 11 for Gradle 7.6 compatibility
+    - name: Set up Java 17 for Cordova Android 12
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '11'
+        java-version: '17'
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
