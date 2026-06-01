@@ -43,14 +43,19 @@ jobs:
     - name: Add Android Platform
       run: cordova platform add android@13.0.0
 
-    - name: Override Gradle Wrapper properties
+    - name: Ensure correct gradle execution and class version setup
       run: |
-        cd platforms/android/gradle/wrapper
-        echo "distributionBase=GRADLE_USER_HOME" > gradle-wrapper.properties
-        echo "distributionPath=wrapper/dists" >> gradle-wrapper.properties
-        echo "distributionUrl=https\://services.gradle.org/distributions/gradle-8.7-all.zip" >> gradle-wrapper.properties
-        echo "zipStoreBase=GRADLE_USER_HOME" >> gradle-wrapper.properties
-        echo "zipStorePath=wrapper/dists" >> gradle-wrapper.properties
+        cd platforms/android
+        # Bypass wrapper task using wrapper properties directly
+        echo "distributionBase=GRADLE_USER_HOME" > gradle/wrapper/gradle-wrapper.properties
+        echo "distributionPath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
+        echo "distributionUrl=https\://services.gradle.org/distributions/gradle-8.7-bin.zip" >> gradle/wrapper/gradle-wrapper.properties
+        echo "zipStoreBase=GRADLE_USER_HOME" >> gradle/wrapper/gradle-wrapper.properties
+        echo "zipStorePath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
+        
+        # Give gradle permissions explicitly
+        chmod +x gradlew
+        ./gradlew --version
 
     - name: Build Android APK
       run: cordova build android --release
