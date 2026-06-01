@@ -2,7 +2,7 @@ import * as monaco from 'monaco-editor';
 import { AICopilot } from "./ai-copilot.js";
 import { PRootEngine } from "./proot-engine.js";
 
-document.addEventListener('deviceready', onDeviceReady, false);
+onDeviceReady();
 
 let editor;
 let activeFile = 'index.html';
@@ -15,7 +15,7 @@ const fileData = {
 };
 
 function onDeviceReady() {
-    console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
+    console.log("AeroCode Initialized");
     initEditor();
     setupEventListeners();
     setupShortcuts();
@@ -191,7 +191,3 @@ function logToTerminal(msg) {
     }
 }
 
-// Fallback for non-cordova environments
-if (!window.cordova) {
-    onDeviceReady();
-}

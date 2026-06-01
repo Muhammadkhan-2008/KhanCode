@@ -1,5 +1,7 @@
-// Alpine/PRoot integration engine for AeroCode
-// Bridges JavaScript with our custom Native Kotlin PRoot Cordova Plugin
+import { Capacitor, registerPlugin } from '@capacitor/core';
+
+// Reference the custom Capacitor plugin we registered in Android
+const AeroPRoot = registerPlugin('AeroPRoot');
 
 export class PRootEngine {
     constructor() {
@@ -9,29 +11,20 @@ export class PRootEngine {
 
     async initialize() {
         if (this.isInitialized) return;
-        this.log("Connecting to Native Kotlin Engine...");
+        this.log("Connecting to Native Kotlin Engine via Capacitor...");
         
-        return new Promise((resolve, reject) => {
-            if (window.AeroPRoot) {
-                window.AeroPRoot.initialize(
-                    (msg) => {
-                        this.log("✓ " + msg);
-                        this.isInitialized = true;
-                        resolve();
-                    },
-                    (err) => {
-                        this.log("✖ Initialization Error: " + err);
-                        reject(err);
-                    }
-                );
+        try {
+            if (Capacitor.isNativePlatform()) {
+                const response = await AeroPRoot.initialize();
+                this.log("✓ " + response.message);
             } else {
-                this.log("Native Kotlin Plugin missing, falling back to Web Mock Engine.");
-                setTimeout(() => {
-                    this.isInitialized = true;
-                    resolve();
-                }, 1000);
+                this.log("Running in Web Mode: Native Kotlin Plugin missing, falling back to Web Mock Engine.");
+                await new Promise(resolve => setTimeout(resolve, 1000));
             }
-        });
+            this.isInitialized = true;
+        } catch (e) {
+            this.log("✖ Initialization Error: " + e.message);
+        }
     }
 
     async runCode(language, code) {
@@ -44,39 +37,33 @@ export class PRootEngine {
         this.busy = true;
         this.log(`> Executing ${language}...`);
 
-        return new Promise((resolve) => {
-            if (window.AeroPRoot) {
-                window.AeroPRoot.executeCode(language, code, 
-                    (output) => {
-                        this.log(output);
-                        this.busy = false;
-                        resolve(output);
-                    },
-                    (err) => {
-                        this.log(`Execution Error: ${err}`);
-                        this.busy = false;
-                        resolve(err);
-                    }
-                );
+        try {
+            if (Capacitor.isNativePlatform()) {
+                const response = await AeroPRoot.executeCode({ language, code });
+                this.log(response.output);
+                this.busy = false;
+                return response.output;
             } else {
                 // Mock execution response for Browser/Web context
-                setTimeout(() => {
-                    let output = "";
-                    if (language === 'python') {
-                        output = "Python Mock Output:\nHello from Web Fallback!\nExecution successful.";
-                    } else if (language === 'cpp') {
-                        output = "C++ Mock Compiler Output:\nCompiled successfully.\nHello from Web Fallback!";
-                    } else if (language === 'java') {
-                        output = "Java Mock Output:\nHello from Web JVM Mock!";
-                    } else {
-                        output = `Execution for ${language} is not configured yet.`;
-                    }
-                    this.log(output);
-                    this.busy = false;
-                    resolve(output);
-                }, 1000);
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                let output = "";
+                if (language === 'python') {
+                    output = "Python Mock Output:\nHello from Web Fallback!\nExecution successful.";
+                } else if (language === 'cpp') {
+                    output = "C++ Mock Compiler Output:\nCompiled successfully.\nHello from Web Fallback!";
+                } else if (language === 'java') {
+                    output = "Java Mock Output:\nHello from Web JVM Mock!";
+                } else {
+                    output = `Execution for ${language} is not configured yet.`;
+                }
+                this.log(output);
+                this.busy = false;
+                return output;
             }
-        });
+        } catch (e) {
+            this.log(`Execution Error: ${e.message}`);
+            this.busy = false;
+        }
     }
 
     log(msg) {
