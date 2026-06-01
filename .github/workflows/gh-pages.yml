@@ -27,15 +27,10 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Raw prepare dist
-        run: |
-          mkdir -p dist
-          cp -r www/* dist/
-
-      - name: Upload artifact
+      - name: Build and Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
+          path: 'www'
 
       - name: Deploy to GitHub Pages
         id: deployment
