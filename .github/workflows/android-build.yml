@@ -43,12 +43,14 @@ jobs:
     - name: Add Android Platform
       run: cordova platform add android@13.0.0
 
-    - name: Build Android APK natively using raw gradle bypass
+    - name: Download specific Gradle 8.7 directly and use it locally to bypass wrapper entirely
       run: |
+        wget https://services.gradle.org/distributions/gradle-8.7-bin.zip
+        unzip -q gradle-8.7-bin.zip
+        export GRADLE_HOME=$PWD/gradle-8.7
+        export PATH=$GRADLE_HOME/bin:$PATH
         cd platforms/android
-        export CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL="https://services.gradle.org/distributions/gradle-8.7-bin.zip"
-        chmod +x gradlew
-        ./gradlew assembleRelease --no-daemon
+        gradle assembleRelease --no-daemon
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
