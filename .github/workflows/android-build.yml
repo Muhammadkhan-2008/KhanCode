@@ -43,24 +43,12 @@ jobs:
     - name: Add Android Platform
       run: cordova platform add android@13.0.0
 
-    - name: Force native gradle wrapper task bypass
+    - name: Build Android APK natively using raw gradle bypass
       run: |
         cd platforms/android
-        rm -rf gradle/wrapper/gradle-wrapper.properties
-        mkdir -p gradle/wrapper
-        cat << 'WRAPPER_EOF' > gradle/wrapper/gradle-wrapper.properties
-        distributionBase=GRADLE_USER_HOME
-        distributionPath=wrapper/dists
-        distributionUrl=https\://services.gradle.org/distributions/gradle-8.7-bin.zip
-        zipStoreBase=GRADLE_USER_HOME
-        zipStorePath=wrapper/dists
-        WRAPPER_EOF
-        
-        # Manually invoke gradle to download wrapper correctly
-        ./gradlew --version
-
-    - name: Build Android APK
-      run: cordova build android --release -- --jvmargs="-Xmx2048m"
+        export CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL="https://services.gradle.org/distributions/gradle-8.7-bin.zip"
+        chmod +x gradlew
+        ./gradlew assembleRelease --no-daemon
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
