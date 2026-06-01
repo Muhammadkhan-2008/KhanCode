@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android" id="cordova-plugin-aerocode-proot" version="1.0.0">
+    <name>AeroCodePRootEngine</name>
+    <description>Native Kotlin PRoot Engine for AeroCode</description>
+    <license>MIT</license>
+
+    <js-module src="www/PRootEngine.js" name="PRootEngine">
+        <clobbers target="AeroPRoot" />
+    </js-module>
+
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="AeroPRoot">
+                <param name="android-package" value="com.khan.aerocode.AeroPRoot" />
+            </feature>
+        </config-file>
+
+        <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
+
+        <source-file src="src/android/AeroPRoot.kt" target-dir="app/src/main/java/com/khan/aerocode" />
+    </platform>
+</plugin>
