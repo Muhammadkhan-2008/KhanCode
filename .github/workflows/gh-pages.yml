@@ -24,13 +24,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies and build parcel
+        run: |
+          npm install -g parcel
+          npm install --legacy-peer-deps
+          npm run build
+
+      - name: Ensure index file has no missing references
+        run: |
+          # Copy a dummy cordova.js so browser preview works smoothly without 404 errors
+          echo "console.log('Cordova mock loaded');" > dist/cordova.js
+          echo "console.log('Cordova plugins mock loaded');" > dist/cordova_plugins.js
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Build and Upload Artifact
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'www'
+          path: './dist'
 
       - name: Deploy to GitHub Pages
         id: deployment
