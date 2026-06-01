@@ -38,21 +38,15 @@ jobs:
       run: npm run build
 
     - name: Add Android Platform
-      run: cordova platform add android@13.0.0
-
-    - name: Setup Gradle 8.7 properties for Cordova
       run: |
-        cd platforms/android
-        # Bypass Gradle Wrapper errors by strictly specifying gradle properties
-        echo "distributionBase=GRADLE_USER_HOME" > gradle/wrapper/gradle-wrapper.properties
-        echo "distributionPath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
-        echo "distributionUrl=https\://services.gradle.org/distributions/gradle-8.7-bin.zip" >> gradle/wrapper/gradle-wrapper.properties
-        echo "zipStoreBase=GRADLE_USER_HOME" >> gradle/wrapper/gradle-wrapper.properties
-        echo "zipStorePath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
+        export JAVA_HOME=$JAVA_HOME_17_X64
+        export CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL=https://services.gradle.org/distributions/gradle-8.7-bin.zip
+        cordova platform add android@13.0.0
 
     - name: Build Android APK
       run: |
         export JAVA_HOME=$JAVA_HOME_17_X64
+        export CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL=https://services.gradle.org/distributions/gradle-8.7-bin.zip
         cordova build android --release
 
     - name: Upload APK Artifact
