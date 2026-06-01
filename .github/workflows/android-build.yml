@@ -18,27 +18,34 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
 
-    - name: Set up Java 11 for old SDK compliance fallback
+    - name: Set up Java 17
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '11'
+        java-version: '17'
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
     - name: Install Cordova and dependencies
       run: |
-        npm install -g cordova@11 parcel
+        npm install -g cordova@12 parcel
         npm install
 
     - name: Build JS
       run: npm run build
 
     - name: Add Android Platform
-      run: cordova platform add android@10.1.2
+      run: cordova platform add android@13.0.0
+
+    - name: Update Gradle wrapper to avoid class 65 bug
+      run: |
+        cd platforms/android
+        # Update gradle version explicitly to 8.7 to ensure java 17 compatibility
+        sed -i 's/distributionUrl=https\\\:\/\/services.gradle.org\/distributions\/gradle-.*-all.zip/distributionUrl=https\\\:\/\/services.gradle.org\/distributions\/gradle-8.7-all.zip/g' gradle/wrapper/gradle-wrapper.properties
+        ./gradlew --version
 
     - name: Build Android APK
       run: cordova build android --release
