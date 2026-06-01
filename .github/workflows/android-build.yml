@@ -43,10 +43,10 @@ jobs:
     - name: Add Android Platform
       run: cordova platform add android@13.0.0
 
-    - name: Fix Wrapper properties inline
+    - name: Fix Wrapper properties inline explicitly using right directory
       run: |
-        cd platforms/android/gradle/wrapper
-        cat << 'WRAPPER_EOF' > gradle-wrapper.properties
+        mkdir -p platforms/android/gradle/wrapper
+        cat << 'WRAPPER_EOF' > platforms/android/gradle/wrapper/gradle-wrapper.properties
         distributionBase=GRADLE_USER_HOME
         distributionPath=wrapper/dists
         distributionUrl=https\://services.gradle.org/distributions/gradle-8.7-bin.zip
