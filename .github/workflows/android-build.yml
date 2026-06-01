@@ -43,10 +43,14 @@ jobs:
     - name: Add Android Platform
       run: cordova platform add android@13.0.0
 
-    - name: Update Gradle Wrapper to 8.7
+    - name: Override Gradle Wrapper properties
       run: |
-        cd platforms/android
-        gradle wrapper --gradle-version 8.7
+        cd platforms/android/gradle/wrapper
+        echo "distributionBase=GRADLE_USER_HOME" > gradle-wrapper.properties
+        echo "distributionPath=wrapper/dists" >> gradle-wrapper.properties
+        echo "distributionUrl=https\://services.gradle.org/distributions/gradle-8.7-all.zip" >> gradle-wrapper.properties
+        echo "zipStoreBase=GRADLE_USER_HOME" >> gradle-wrapper.properties
+        echo "zipStorePath=wrapper/dists" >> gradle-wrapper.properties
 
     - name: Build Android APK
       run: cordova build android --release
