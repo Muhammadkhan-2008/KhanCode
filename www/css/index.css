@@ -4,12 +4,13 @@
     padding: 0;
 }
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #1e1e1e;
     color: #cccccc;
     height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 #app {
     display: flex;
@@ -20,54 +21,72 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #252526;
+    background-color: #2d2d2d;
     padding: 10px 20px;
-    height: 50px;
-    border-bottom: 1px solid #333;
+    height: 55px;
+    border-bottom: 1px solid #444;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    z-index: 10;
 }
 .logo {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-weight: 600;
-    font-size: 1.2rem;
-    color: #fff;
+    gap: 12px;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #ffffff;
+    letter-spacing: 0.5px;
 }
 .controls {
     display: flex;
     gap: 10px;
 }
 .btn {
-    background-color: #333;
-    color: #fff;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
+    background-color: #3c3c3c;
+    color: #d4d4d4;
+    border: 1px solid #4a4a4a;
+    padding: 6px 14px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 0.9rem;
+    transition: all 0.2s;
+    font-weight: 600;
+}
+.btn:hover {
+    background-color: #4a4a4a;
+    color: #ffffff;
 }
 .btn.primary {
-    background-color: #007acc;
+    background-color: #0e639c;
+    border-color: #1177bb;
+    color: #ffffff;
 }
 .btn.primary:hover {
-    background-color: #005f9e;
+    background-color: #1177bb;
+}
+#main-workspace {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
 }
 #editor-container {
     flex: 1;
     position: relative;
 }
 #terminal-container {
-    height: 150px;
-    background-color: #1e1e1e;
-    border-top: 1px solid #333;
-    padding: 10px;
-    font-family: monospace;
+    height: 200px;
+    background-color: #181818;
+    border-top: 1px solid #444;
+    padding: 12px;
+    font-family: 'Consolas', 'Courier New', monospace;
     overflow-y: auto;
-    color: #00ff00;
+    color: #4af626;
+    font-size: 0.9rem;
+    line-height: 1.4;
 }
 #browser-preview {
     flex: 1;
-    background-color: #fff;
+    background-color: #ffffff;
 }
 #preview-frame {
     width: 100%;
