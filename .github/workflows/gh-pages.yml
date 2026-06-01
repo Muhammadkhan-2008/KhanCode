@@ -29,17 +29,10 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies and build parcel
+      - name: Generate static web structure
         run: |
-          npm install -g parcel
-          npm install --legacy-peer-deps
-          npm run build
-
-      - name: Ensure index file has no missing references
-        run: |
-          # Copy a dummy cordova.js so browser preview works smoothly without 404 errors
-          echo "console.log('Cordova mock loaded');" > dist/cordova.js
-          echo "console.log('Cordova plugins mock loaded');" > dist/cordova_plugins.js
+          mkdir -p dist
+          cp -r www/* dist/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
