@@ -31,7 +31,7 @@ jobs:
 
     - name: Install Cordova and dependencies
       run: |
-        npm install -g cordova@12 parcel
+        npm install -g cordova parcel
         npm install
 
     - name: Build JS
@@ -39,13 +39,6 @@ jobs:
 
     - name: Add Android Platform
       run: cordova platform add android@13.0.0
-
-    - name: Update Gradle wrapper to avoid class 65 bug
-      run: |
-        cd platforms/android
-        # Update gradle version explicitly to 8.7 to ensure java 17 compatibility
-        sed -i 's/distributionUrl=https\\\:\/\/services.gradle.org\/distributions\/gradle-.*-all.zip/distributionUrl=https\\\:\/\/services.gradle.org\/distributions\/gradle-8.7-all.zip/g' gradle/wrapper/gradle-wrapper.properties
-        ./gradlew --version
 
     - name: Build Android APK
       run: cordova build android --release
