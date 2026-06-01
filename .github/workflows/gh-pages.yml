@@ -32,12 +32,17 @@ jobs:
       - name: Install Dependencies
         run: |
           npm install -g parcel
-          npm install
+          npm install --legacy-peer-deps
 
       - name: Build Web Dist safely
         run: |
           npm run build -- --no-cache
-          cp www/cordova.js dist/ || true
+
+      - name: Fallback copy static if build fails
+        if: failure()
+        run: |
+          mkdir -p dist
+          cp -r www/* dist/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
