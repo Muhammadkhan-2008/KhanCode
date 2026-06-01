@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AeroCode</string>
+    <string name="title_activity_main">AeroCode</string>
+    <string name="package_name">com.khan.aerocode</string>
+    <string name="custom_url_scheme">com.khan.aerocode</string>
+</resources>
