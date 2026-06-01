@@ -43,13 +43,25 @@ jobs:
     - name: Add Android Platform
       run: cordova platform add android@13.0.0
 
-    - name: Execute Android APK Build cleanly
+    - name: Wipe existing wrapper and build via gradle entirely standalone
       run: |
-        export CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL=https\://services.gradle.org/distributions/gradle-8.7-bin.zip
-        export JAVA_HOME=$JAVA_HOME_17_X64
         cd platforms/android
+        rm -rf gradle/wrapper/gradle-wrapper.properties
+        rm -rf ~/.gradle/caches/
+        rm -rf ~/.gradle/daemon/
+        mkdir -p gradle/wrapper
+        cat << 'WRAPPER_EOF' > gradle/wrapper/gradle-wrapper.properties
+        distributionBase=GRADLE_USER_HOME
+        distributionPath=wrapper/dists
+        distributionUrl=https\://services.gradle.org/distributions/gradle-8.7-bin.zip
+        zipStoreBase=GRADLE_USER_HOME
+        zipStorePath=wrapper/dists
+        WRAPPER_EOF
+        
+        export JAVA_HOME=$JAVA_HOME_17_X64
+        export PATH=$JAVA_HOME/bin:$PATH
         chmod +x gradlew
-        ./gradlew assembleRelease
+        ./gradlew assembleRelease --no-daemon -Porg.gradle.java.home=$JAVA_HOME_17_X64
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
