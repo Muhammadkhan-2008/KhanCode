@@ -20,11 +20,11 @@ jobs:
       with:
         node-version: '20'
 
-    - name: Set up Java 17
+    - name: Set up Java 11 safely for older cordova execution
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '17'
+        java-version: '11'
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
@@ -34,23 +34,20 @@ jobs:
 
     - name: Install Cordova and dependencies
       run: |
-        npm install -g cordova parcel
+        npm install -g cordova@11 parcel
         npm install
 
     - name: Build JS
       run: npm run build
 
     - name: Add Android Platform
-      run: cordova platform add android@13.0.0
+      run: cordova platform add android@10.1.2
 
-    - name: Download specific Gradle 8.7 directly and use it locally to bypass wrapper entirely
+    - name: Export absolute paths for JAVA explicitly then build APK
       run: |
-        wget https://services.gradle.org/distributions/gradle-8.7-bin.zip
-        unzip -q gradle-8.7-bin.zip
-        export GRADLE_HOME=$PWD/gradle-8.7
-        export PATH=$GRADLE_HOME/bin:$PATH
-        cd platforms/android
-        gradle assembleRelease --no-daemon
+        export JAVA_HOME=$JAVA_HOME_11_X64
+        export PATH=$JAVA_HOME/bin:$PATH
+        cordova build android --release
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
