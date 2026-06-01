@@ -24,25 +24,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Install Dependencies
-        run: |
-          npm install -g parcel
-          npm install --legacy-peer-deps
-
-      - name: Build Web Dist safely
-        run: |
-          npm run build -- --no-cache
-
-      - name: Fallback copy static if build fails
-        if: failure()
+      - name: Raw prepare dist
         run: |
           mkdir -p dist
           cp -r www/* dist/
+          # Fix missing script references manually
+          sed -i 's/<script type="module" src="js\/index.js"><\/script>/<script type="module" src="js\/index.js"><\/script>\n    <script src="cordova.js"><\/script>/g' dist/index.html || true
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
