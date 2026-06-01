@@ -28,6 +28,11 @@ jobs:
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
+      
+    - name: Setup Android environment
+      run: |
+        echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
+        echo "CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL=https\://services.gradle.org/distributions/gradle-8.7-bin.zip" >> $GITHUB_ENV
 
     - name: Accept Android licenses
       run: yes | sdkmanager --licenses || true
@@ -40,13 +45,18 @@ jobs:
     - name: Build JS
       run: npm run build
 
-    - name: Ensure exact configuration settings
-      run: |
-        echo "CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL=https\://services.gradle.org/distributions/gradle-8.7-bin.zip" >> $GITHUB_ENV
-        echo "JAVA_HOME=$JAVA_HOME_17_X64" >> $GITHUB_ENV
-
     - name: Add Android Platform
       run: cordova platform add android@13.0.0
+
+    - name: Force Gradle Wrapper to 8.7
+      run: |
+        cd platforms/android
+        # Rewrite the wrapper properties directly to ensure 8.7 is used
+        echo "distributionBase=GRADLE_USER_HOME" > gradle/wrapper/gradle-wrapper.properties
+        echo "distributionPath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
+        echo "distributionUrl=https\://services.gradle.org/distributions/gradle-8.7-all.zip" >> gradle/wrapper/gradle-wrapper.properties
+        echo "zipStoreBase=GRADLE_USER_HOME" >> gradle/wrapper/gradle-wrapper.properties
+        echo "zipStorePath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
 
     - name: Build Android APK
       run: cordova build android --release
