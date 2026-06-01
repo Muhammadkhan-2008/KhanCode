@@ -1,4 +1,4 @@
-name: Android APK Build
+name: Android Capacitor APK Build
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
@@ -32,39 +32,23 @@ jobs:
     - name: Accept Android licenses
       run: yes | sdkmanager --licenses || true
 
-    - name: Install Cordova and dependencies
+    - name: Install dependencies & Build Frontend
       run: |
-        npm install -g cordova parcel
+        npm install -g parcel @capacitor/cli
         npm install
+        npm run build
 
-    - name: Build JS
-      run: npm run build
+    - name: Sync Capacitor
+      run: npx cap sync android
 
-    - name: Add Android Platform
-      run: cordova platform add android@13.0.0
-
-    - name: Wipe existing wrapper and build via gradle entirely standalone
+    - name: Build Android APK
       run: |
-        cd platforms/android
-        rm -rf gradle/wrapper/gradle-wrapper.properties
-        rm -rf ~/.gradle/caches/
-        rm -rf ~/.gradle/daemon/
-        mkdir -p gradle/wrapper
-        cat << 'WRAPPER_EOF' > gradle/wrapper/gradle-wrapper.properties
-        distributionBase=GRADLE_USER_HOME
-        distributionPath=wrapper/dists
-        distributionUrl=https\://services.gradle.org/distributions/gradle-8.7-bin.zip
-        zipStoreBase=GRADLE_USER_HOME
-        zipStorePath=wrapper/dists
-        WRAPPER_EOF
-        
-        export JAVA_HOME=$JAVA_HOME_17_X64
-        export PATH=$JAVA_HOME/bin:$PATH
+        cd android
         chmod +x gradlew
-        ./gradlew assembleRelease --no-daemon -Porg.gradle.java.home=$JAVA_HOME_17_X64
+        ./gradlew assembleRelease --no-daemon
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: AeroCode-Release-APK
-        path: platforms/android/app/build/outputs/apk/release/*.apk
+        path: android/app/build/outputs/apk/release/*.apk
