@@ -20,28 +20,28 @@ jobs:
       with:
         node-version: '18'
 
-    - name: Set up Java 17
+    - name: Set up Java 11 for old SDK compliance fallback
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '17'
+        java-version: '11'
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
     - name: Install Cordova and dependencies
       run: |
-        npm install -g cordova parcel
+        npm install -g cordova@11 parcel
         npm install
 
     - name: Build JS
       run: npm run build
 
     - name: Add Android Platform
-      run: cordova platform add android@13.0.0
+      run: cordova platform add android@10.1.2
 
     - name: Build Android APK
-      run: cordova build android --release -- --jvmargs="-Xmx2048m" --stacktrace --info
+      run: cordova build android --release
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
