@@ -13,24 +13,82 @@
     <div id="app">
         <header id="top-bar">
             <div class="logo">
-                <img src="img/logo.svg" alt="AeroCode Logo" width="30" height="30">
+                <img src="img/logo.svg" alt="AeroCode Logo" width="24" height="24">
                 <span>AeroCode</span>
             </div>
             <div class="controls">
+                <button id="search-btn" class="btn" title="Ctrl+P">Search</button>
                 <button id="ai-btn" class="btn">Ask AI Copilot</button>
-                <button id="run-btn" class="btn primary">Run Code</button>
+                <button id="run-btn" class="btn primary" title="Ctrl+Enter">Run Code</button>
+                <button id="settings-btn" class="btn">Settings</button>
             </div>
         </header>
         
         <div id="main-workspace">
-            <div id="editor-container"></div>
-            <div id="browser-preview" style="display:none;">
-                <iframe id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe>
-            </div>
+            <aside id="sidebar">
+                <div class="sidebar-header">
+                    <span>Explorer</span>
+                    <div class="sidebar-actions">
+                        <button id="new-file-btn" title="New File">+</button>
+                        <button id="new-folder-btn" title="New Folder">📁</button>
+                    </div>
+                </div>
+                <div id="file-explorer">
+                    <!-- Mocked file tree -->
+                    <div class="file-item active" data-file="index.html">📄 index.html</div>
+                    <div class="file-item" data-file="style.css">📄 style.css</div>
+                    <div class="file-item" data-file="script.js">📄 script.js</div>
+                    <div class="file-item" data-file="main.py">🐍 main.py</div>
+                    <div class="file-item" data-file="app.cpp">⚙️ app.cpp</div>
+                </div>
+            </aside>
+
+            <main id="editor-area">
+                <div id="welcome-screen">
+                    <img src="img/logo.svg" width="100" height="100" style="margin-bottom: 20px;">
+                    <h1>AeroCode IDE</h1>
+                    <p>Native editing, uncompromised performance.</p>
+                    <div class="shortcut-list">
+                        <p><span>Ctrl + S</span> Save File</p>
+                        <p><span>Ctrl + P</span> Quick Search</p>
+                        <p><span>Ctrl + Enter</span> Run Current Code</p>
+                        <p><span>Ctrl + Space</span> Trigger AI Copilot</p>
+                    </div>
+                </div>
+
+                <div id="editor-container"></div>
+                
+                <div id="browser-preview">
+                    <iframe id="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe>
+                </div>
+            </main>
         </div>
         
-        <div id="terminal-container"></div>
+        <div id="terminal-container">
+            <div>[AeroCode Console] System initialized. Ready for execution.</div>
+        </div>
     </div>
+
+    <!-- Modals -->
+    <div id="new-file-modal" class="modal">
+        <div class="modal-content">
+            <h3>Create New File</h3>
+            <input type="text" id="new-file-name" placeholder="filename.ext">
+            <button id="create-file-submit" class="btn primary">Create</button>
+            <button class="btn close-modal">Cancel</button>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <h3>Account & Settings</h3>
+            <p style="color:#aaa; font-size:0.9rem; margin-bottom:10px;">Configure AI Copilot token:</p>
+            <input type="text" id="hf-token-input" placeholder="HuggingFace API Token">
+            <button id="save-settings-btn" class="btn primary">Save</button>
+            <button class="btn close-modal">Close</button>
+        </div>
+    </div>
+
     <!-- <script src="cordova.js"></script> -->
     <script type="module" src="js/index.js"></script>
 </body>
