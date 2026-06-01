@@ -34,8 +34,8 @@ jobs:
           npm install -g parcel
           npm install
 
-      - name: Build Web Dist
-        run: npm run build
+      - name: Build Web Dist safely bypassing cache
+        run: npm run build -- --no-cache
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
