@@ -32,14 +32,9 @@ jobs:
     - name: Accept Android licenses
       run: yes | sdkmanager --licenses || true
 
-    - name: Clean conflicting gradle daemon states
-      run: |
-        rm -rf ~/.gradle/caches/
-        rm -rf ~/.gradle/daemon/
-
     - name: Install Cordova and dependencies
       run: |
-        npm install -g cordova@12 parcel
+        npm install -g cordova parcel
         npm install
 
     - name: Build JS
@@ -48,11 +43,11 @@ jobs:
     - name: Add Android Platform
       run: cordova platform add android@13.0.0
 
-    - name: Update wrapper config explicitly
+    - name: Wipe existing wrapper and regenerate via gradle natively
       run: |
         cd platforms/android
-        # Bypass class 65 error from gradle 7 fallback
-        sed -i 's/gradle-[a-zA-Z0-9.-]*-all.zip/gradle-8.7-all.zip/g' gradle/wrapper/gradle-wrapper.properties
+        rm -rf gradle/wrapper/gradle-wrapper.jar
+        gradle wrapper --gradle-version 8.7 --distribution-type all
 
     - name: Build Android APK
       run: cordova build android --release -- --jvmargs="-Xmx2048m"
