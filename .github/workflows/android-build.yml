@@ -29,6 +29,9 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
+    - name: Accept Android licenses
+      run: yes | sdkmanager --licenses || true
+
     - name: Install Cordova and dependencies
       run: |
         npm install -g cordova parcel
@@ -58,7 +61,7 @@ jobs:
         
         export JAVA_HOME=$JAVA_HOME_17_X64
         chmod +x gradlew
-        ./gradlew assembleRelease --no-daemon --stacktrace
+        ./gradlew assembleRelease --no-daemon -Porg.gradle.java.home=$JAVA_HOME_17_X64
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
