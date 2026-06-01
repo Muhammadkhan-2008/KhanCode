@@ -1,5 +1,5 @@
 // Alpine/PRoot integration engine for AeroCode
-// This handles the background execution of Linux binaries without exposing a terminal to the user.
+// Bridges JavaScript with our custom Native Kotlin PRoot Cordova Plugin
 
 export class PRootEngine {
     constructor() {
@@ -9,19 +9,29 @@ export class PRootEngine {
 
     async initialize() {
         if (this.isInitialized) return;
-        this.log("Bootstrapping Alpine Linux PRoot engine...");
+        this.log("Connecting to Native Kotlin Engine...");
         
-        // In a real Cordova Android environment, this would:
-        // 1. Download Alpine minirootfs tarball (if not exists in app private storage)
-        // 2. Extract it using a bundled native extraction plugin
-        // 3. Download/extract PRoot binary for the architecture (aarch64)
-        // 4. Set up necessary symlinks and permissions
-        
-        // Since we are mocking the native backend until actual device deployment:
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        this.log("Alpine PRoot Engine initialized securely in private storage.");
-        this.isInitialized = true;
+        return new Promise((resolve, reject) => {
+            if (window.AeroPRoot) {
+                window.AeroPRoot.initialize(
+                    (msg) => {
+                        this.log("✓ " + msg);
+                        this.isInitialized = true;
+                        resolve();
+                    },
+                    (err) => {
+                        this.log("✖ Initialization Error: " + err);
+                        reject(err);
+                    }
+                );
+            } else {
+                this.log("Native Kotlin Plugin missing, falling back to Web Mock Engine.");
+                setTimeout(() => {
+                    this.isInitialized = true;
+                    resolve();
+                }, 1000);
+            }
+        });
     }
 
     async runCode(language, code) {
@@ -34,32 +44,39 @@ export class PRootEngine {
         this.busy = true;
         this.log(`> Executing ${language}...`);
 
-        try {
-            // Mock execution response based on language
-            let output = "";
-            
-            // In reality, this would write the `code` to a file in private storage, 
-            // construct a proot command: `proot -S alpine_rootfs /bin/sh -c "python3 /script.py"`
-            // and execute it via Cordova exec() plugin.
-            
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            if (language === 'python') {
-                output = "Python Engine Output:\nHello from Python via Alpine PRoot!\nExecution successful.";
-            } else if (language === 'cpp') {
-                output = "C++ GCC Compiler Output:\nCompiled successfully.\nExecution Output:\nHello from C++ native binary!";
-            } else if (language === 'java') {
-                output = "Java Runtime Output:\nHello from Java JVM in PRoot!";
+        return new Promise((resolve) => {
+            if (window.AeroPRoot) {
+                window.AeroPRoot.executeCode(language, code, 
+                    (output) => {
+                        this.log(output);
+                        this.busy = false;
+                        resolve(output);
+                    },
+                    (err) => {
+                        this.log(`Execution Error: ${err}`);
+                        this.busy = false;
+                        resolve(err);
+                    }
+                );
             } else {
-                output = `Execution for ${language} is not configured yet.`;
+                // Mock execution response for Browser/Web context
+                setTimeout(() => {
+                    let output = "";
+                    if (language === 'python') {
+                        output = "Python Mock Output:\nHello from Web Fallback!\nExecution successful.";
+                    } else if (language === 'cpp') {
+                        output = "C++ Mock Compiler Output:\nCompiled successfully.\nHello from Web Fallback!";
+                    } else if (language === 'java') {
+                        output = "Java Mock Output:\nHello from Web JVM Mock!";
+                    } else {
+                        output = `Execution for ${language} is not configured yet.`;
+                    }
+                    this.log(output);
+                    this.busy = false;
+                    resolve(output);
+                }, 1000);
             }
-
-            this.log(output);
-        } catch (e) {
-            this.log(`Execution Error: ${e.message}`);
-        } finally {
-            this.busy = false;
-        }
+        });
     }
 
     log(msg) {
