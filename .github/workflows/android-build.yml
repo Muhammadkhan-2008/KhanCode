@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout repository
@@ -29,6 +29,9 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
 
+    - name: Accept Android licenses
+      run: yes | sdkmanager --licenses || true
+
     - name: Install Cordova and dependencies
       run: |
         npm install -g cordova parcel
@@ -37,17 +40,23 @@ jobs:
     - name: Build JS
       run: npm run build
 
-    - name: Setup Cordova Android 12 with Java 11 temporarily for old Gradle fallback
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '11'
-
     - name: Add Android Platform
       run: cordova platform add android@12.0.1
 
+    - name: Override Gradle Version using Properties
+      run: |
+        cd platforms/android
+        mkdir -p gradle/wrapper
+        echo "distributionBase=GRADLE_USER_HOME" > gradle/wrapper/gradle-wrapper.properties
+        echo "distributionPath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
+        echo "distributionUrl=https\://services.gradle.org/distributions/gradle-8.7-bin.zip" >> gradle/wrapper/gradle-wrapper.properties
+        echo "zipStoreBase=GRADLE_USER_HOME" >> gradle/wrapper/gradle-wrapper.properties
+        echo "zipStorePath=wrapper/dists" >> gradle/wrapper/gradle-wrapper.properties
+
     - name: Build Android APK
-      run: cordova build android --release
+      env:
+        CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL: "https://services.gradle.org/distributions/gradle-8.7-bin.zip"
+      run: cordova build android --release -- --jvmargs='-Xmx2048m'
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
