@@ -20,11 +20,11 @@ jobs:
       with:
         node-version: '20'
 
-    - name: Set up Java 11 safely for older cordova execution
+    - name: Set up Java 17
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '11'
+        java-version: '17'
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
@@ -34,20 +34,32 @@ jobs:
 
     - name: Install Cordova and dependencies
       run: |
-        npm install -g cordova@11 parcel
+        npm install -g cordova parcel
         npm install
 
     - name: Build JS
       run: npm run build
 
     - name: Add Android Platform
-      run: cordova platform add android@10.1.2
+      run: cordova platform add android@13.0.0
 
-    - name: Export absolute paths for JAVA explicitly then build APK
+    - name: Fix Wrapper properties inline
       run: |
-        export JAVA_HOME=$JAVA_HOME_11_X64
-        export PATH=$JAVA_HOME/bin:$PATH
-        cordova build android --release
+        cd platforms/android/gradle/wrapper
+        cat << 'WRAPPER_EOF' > gradle-wrapper.properties
+        distributionBase=GRADLE_USER_HOME
+        distributionPath=wrapper/dists
+        distributionUrl=https\://services.gradle.org/distributions/gradle-8.7-bin.zip
+        zipStoreBase=GRADLE_USER_HOME
+        zipStorePath=wrapper/dists
+        WRAPPER_EOF
+
+    - name: Run Build
+      run: |
+        export JAVA_HOME=$JAVA_HOME_17_X64
+        cd platforms/android
+        chmod +x gradlew
+        ./gradlew assembleRelease --no-daemon
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
