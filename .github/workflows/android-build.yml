@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout repository
@@ -20,32 +20,35 @@ jobs:
       with:
         node-version: '20'
 
-    - name: Set up Java 17
+    - name: Set up Java 17 safely
       uses: actions/setup-java@v4
       with:
-        distribution: 'temurin'
+        distribution: 'zulu'
         java-version: '17'
 
-    - name: Setup Android SDK
+    - name: Set up Android SDK
       uses: android-actions/setup-android@v3
 
-    - name: Accept Android licenses
-      run: yes | sdkmanager --licenses || true
-
-    - name: Install dependencies & Build Frontend
+    - name: Clean runner env explicitly
       run: |
-        npm install -g parcel @capacitor/cli
-        npm install
-        npm run build
+        rm -rf ~/.gradle/caches/
+        rm -rf ~/.gradle/daemon/
+        rm -rf ~/.gradle/wrapper/
 
-    - name: Sync Capacitor
+    - name: Install dependencies & Build Web
+      run: |
+        npm install -g @capacitor/cli parcel
+        npm install --legacy-peer-deps
+        npm run build -- --no-cache
+
+    - name: Sync Capacitor Android
       run: npx cap sync android
 
-    - name: Build Android APK
+    - name: Build APK via Gradle
       run: |
         cd android
         chmod +x gradlew
-        ./gradlew assembleRelease --no-daemon
+        ./gradlew assembleRelease --no-daemon --stacktrace
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
